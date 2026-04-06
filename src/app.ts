@@ -1,17 +1,23 @@
-import { setupCounter } from './counter';
+// import { setupCounter } from './data/counter';
 
 import { AppEvent, eventBus, type EventMap } from './event/event';
-import { logger } from './logger';
+import { logger } from './log/logger';
 import { UIEvent } from './event/ui';
 import { $counter } from './data/data-store';
+import { UI, type UIDelegate } from './ui/ui';
 
 class App {
     private unsubs: Array<() => void> = [];
+    private readonly uiDelegate: UIDelegate = {}
+    private readonly ui: UI;
 
-    constructor() {}
+    constructor() {
+        this.ui = new UI(this.uiDelegate);
+        this.setup();
+    }
 
-    private async onPing(): Promise<void> {
-        logger.info('Pong.');
+    private setup() {
+        eventBus.on(UIEvent.Layout.Resize, this.onLayoutChange);
     }
 
     private async onClose(event: EventMap[typeof AppEvent.Close]): Promise<void> {
@@ -19,42 +25,15 @@ class App {
     }
 
     private async onLayoutChange(event: EventMap[typeof UIEvent.Layout.Resize]): Promise<void> {
-        logger.info('New height:', event.height);
+        logger.info('New w/h:', event.width, event.height);
     }
 
     async start() {
-        document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
-            <div>hello!</div>
-        `;
-        setupCounter(document.querySelector<HTMLButtonElement>('#counter')!);
-
-        try {
-            eventBus.on(AppEvent.Ping, this.onPing);
-            eventBus.on(AppEvent.Close, this.onClose);
-            eventBus.on(UIEvent.Layout.Resize, this.onLayoutChange);
-
-            const unsub = $counter.subscribe((value, oldValue) => {
-                logger.info(`counter value changed from ${oldValue} to ${value}`);
-            });
-            this.unsubs.push(unsub);
-
-            setTimeout(() => {
-                eventBus.emit(AppEvent.Ping);
-                eventBus.emit(AppEvent.Close, { id: 'close-id-200' });
-                $counter.set($counter.get() + 2);
-            }, 2500);
-
-            setTimeout(() => {
-                eventBus.emit(AppEvent.UI.Layout.Resize, { width: 1920, height: 1080 });
-            }, 5000);
-        } catch (error) {
-            logger.error('Failed to start app:', error);
-        }
+        this.ui.start();
     }
 
     async stop() {
         logger.info('Stop app.');
-        eventBus.off(AppEvent.Ping, this.onPing);
         eventBus.off(AppEvent.Close, this.onClose);
         eventBus.off(UIEvent.Layout.Resize, this.onLayoutChange);
         for (const unsub of this.unsubs) {
@@ -63,6 +42,38 @@ class App {
         this.unsubs = [];
         $counter.set(0);
     }
+
+
+    /*
+    setupCounter(document.querySelector<HTMLButtonElement>('#counter')!);
+    try {
+        eventBus.on(AppEvent.Ping, this.onPing);
+        eventBus.on(AppEvent.Close, this.onClose);
+        
+        const unsub = $counter.subscribe((value, oldValue) => {
+            logger.info(`counter value changed from ${oldValue} to ${value}`);
+        });
+        this.unsubs.push(unsub);
+
+        setTimeout(() => {
+            eventBus.emit(AppEvent.Ping);
+            eventBus.emit(AppEvent.Close, { id: 'close-id-200' });
+            $counter.set($counter.get() + 2);
+        }, 2500);
+
+        setTimeout(() => {
+            eventBus.emit(AppEvent.UI.Layout.Resize, { width: 1920, height: 1080 });
+        }, 5000);
+    } catch (error) {
+        logger.error('Failed to start app:', error);
+    }
+    */
+
+    /*
+    private async onPing(): Promise<void> {
+        logger.info('Pong.');
+    }
+    */
 }
 
 export { App };

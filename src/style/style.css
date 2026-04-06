@@ -16,45 +16,24 @@
 body {
     margin: 0;
     display: flex;
+    flex-direction: column;
     place-items: center;
-    min-width: 320px;
-    min-height: 100vh;
     width: 100%;
     height: 100vh;
     overflow: hidden;
-    margin: 0px;
 }
 
-#app {
-    max-width: 1280px;
-    margin: 0 auto;
-    padding: 2rem;
-    text-align: center;
-}
-
-a {
-    font-weight: 500;
-    color: #646cff;
-    text-decoration: inherit;
-}
-a:hover {
-    color: #535bf2;
-}
-
-h1 {
-    font-size: 3.2em;
-    line-height: 1.1;
+#app-container {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+    background-color: red;
 }
 
 @media (prefers-color-scheme: light) {
     :root {
         color: #213547;
         background-color: #ffffff;
-    }
-    a:hover {
-        color: #747bff;
-    }
-    button {
-        background-color: #f9f9f9;
     }
 }

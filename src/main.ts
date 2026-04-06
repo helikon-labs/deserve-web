@@ -1,4 +1,4 @@
-import './style.css';
+import './style/style.css';
 import { App } from '@/app';
 
 let app: App | undefined;
