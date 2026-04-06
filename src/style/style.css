@@ -84,6 +84,11 @@ svg {
     stroke-width: 0.75;
 }
 
+.node-hit-area {
+    fill: transparent;
+    stroke: none;
+}
+
 .node-marker {
     fill: var(--color-node);
     stroke: var(--color-node-stroke);
@@ -260,4 +265,32 @@ svg {
     width: 14px;
     height: 14px;
     stroke: currentColor;
+}
+
+@media (max-width: 600px) {
+    .info-panel {
+        bottom: 16px;
+        left: 16px;
+        right: 56px;
+    }
+
+    .info-title-name {
+        font-size: 15px;
+    }
+
+    .info-title-sub {
+        font-size: 12px;
+    }
+
+    .info-url {
+        font-size: 12px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        min-width: 0;
+    }
+
+    .info-endpoint {
+        min-width: 0;
+    }
 }

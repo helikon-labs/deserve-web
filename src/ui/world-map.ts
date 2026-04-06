@@ -33,9 +33,14 @@ class WorldMap {
     private svg: Selection<SVGSVGElement, unknown, null, undefined> | null = null;
     private countries: FeatureCollection<Geometry | null, GeoJsonProperties> | null = null;
     private tooltip: Selection<HTMLDivElement, unknown, null, undefined> | null = null;
+    private projection: ReturnType<typeof geoMercator> | null = null;
     private activeUnsub: (() => void) | null = null;
     private readonly pingUnsubs: Array<() => void> = [];
     private hideTimeout: ReturnType<typeof setTimeout> | null = null;
+
+    private readonly onContainerTouchStart = (): void => {
+        this.scheduleHide();
+    };
 
     constructor() {
         this.mapContainer = getDOMElementById('map-container', HTMLDivElement);
@@ -52,6 +57,9 @@ class WorldMap {
         this.tooltip.on('mouseleave', () => {
             this.scheduleHide();
         });
+        this.mapContainer.addEventListener('touchstart', this.onContainerTouchStart, {
+            passive: true,
+        });
         this.render();
         this.setupPingSubscriptions();
     }
@@ -65,8 +73,8 @@ class WorldMap {
             return;
         }
         const { clientWidth: width, clientHeight: height } = this.mapContainer;
-        const projection = geoMercator().fitSize([width, height], WORLD_BOUNDS);
-        const path = geoPath().projection(projection);
+        this.projection = geoMercator().fitSize([width, height], WORLD_BOUNDS);
+        const path = geoPath().projection(this.projection);
         if (!this.svg) {
             this.svg = select(this.mapContainer)
                 .append('svg')
@@ -97,35 +105,50 @@ class WorldMap {
                     .append('g')
                     .attr('class', 'node')
                     .attr('data-id', (d) => d.id);
+                g.append('circle').attr('r', 16).attr('class', 'node-hit-area');
                 g.append('circle').attr('r', 5).attr('class', 'node-ping');
                 g.append('circle').attr('r', 5).attr('class', 'node-marker');
                 return g;
             })
             .attr('transform', (d) => {
-                const coords = projection([d.longitude, d.latitude]);
+                const coords = this.projection!([d.longitude, d.latitude]);
                 return coords ? `translate(${coords[0]},${coords[1]})` : '';
             })
             .style('cursor', 'pointer')
             .on('mouseenter', (_, d) => {
-                this.cancelHide();
-                const coords = projection([d.longitude, d.latitude]);
-                if (!coords || !this.tooltip) return;
-                this.tooltip
-                    .style('display', 'block')
-                    .style('left', `${coords[0]}px`)
-                    .style('top', `${coords[1]}px`);
-                this.activeUnsub?.();
-                const stateAtom = nodeStateAtoms.get(d.id);
-                if (!stateAtom) return;
-                // nanostores fires subscribe synchronously with the current value,
-                // so content is set before the browser paints despite appearing after display:block
-                this.activeUnsub = stateAtom.subscribe((state) => {
-                    this.renderTooltipContent(d, state);
-                });
+                this.showTooltipForNode(d);
             })
             .on('mouseleave', () => {
                 this.scheduleHide();
-            });
+            })
+            .on(
+                'touchstart',
+                (event, d) => {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    this.showTooltipForNode(d);
+                },
+                { passive: false } as AddEventListenerOptions,
+            );
+    }
+
+    private showTooltipForNode(d: RPCNode): void {
+        this.cancelHide();
+        if (!this.projection || !this.tooltip) return;
+        const coords = this.projection([d.longitude, d.latitude]);
+        if (!coords) return;
+        this.tooltip
+            .style('display', 'block')
+            .style('left', `${coords[0]}px`)
+            .style('top', `${coords[1]}px`);
+        this.activeUnsub?.();
+        const stateAtom = nodeStateAtoms.get(d.id);
+        if (!stateAtom) return;
+        // nanostores fires subscribe synchronously with the current value,
+        // so content is set before the browser paints despite appearing after display:block
+        this.activeUnsub = stateAtom.subscribe((state) => {
+            this.renderTooltipContent(d, state);
+        });
     }
 
     private renderTooltipContent(node: RPCNode, state: NodeState): void {
@@ -215,6 +238,7 @@ class WorldMap {
         this.cancelHide();
         this.activeUnsub?.();
         this.activeUnsub = null;
+        this.mapContainer.removeEventListener('touchstart', this.onContainerTouchStart);
         for (const unsub of this.pingUnsubs) {
             unsub();
         }
