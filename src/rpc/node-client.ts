@@ -31,6 +31,8 @@ interface BlockHeader {
 type StateUpdate = Partial<NodeState>;
 type OnUpdateCallback = (update: StateUpdate) => void;
 
+const RECONNECT_DELAY_MS = 3_000;
+
 class NodeClient {
     private readonly node: RPCNode;
     private readonly onUpdate: OnUpdateCallback;
@@ -43,6 +45,8 @@ class NodeClient {
     private bestBlockSubId: string | null = null;
     private finalizedBlockSubId: string | null = null;
     private latencyInterval: ReturnType<typeof setInterval> | null = null;
+    private reconnectTimeout: ReturnType<typeof setTimeout> | null = null;
+    private deliberateClose = false;
 
     constructor(node: RPCNode, onUpdate: OnUpdateCallback) {
         this.node = node;
@@ -50,6 +54,7 @@ class NodeClient {
     }
 
     connect(): void {
+        this.deliberateClose = false;
         this.onUpdate({ status: 'connecting' });
         this.ws = new WebSocket(this.node.wsURL);
         this.ws.onopen = () => {
@@ -67,7 +72,10 @@ class NodeClient {
     }
 
     disconnect(): void {
+        this.deliberateClose = true;
         this.clearLatencyInterval();
+        this.clearReconnectTimeout();
+        this.rejectPending();
         this.ws?.close();
         this.ws = null;
     }
@@ -88,7 +96,15 @@ class NodeClient {
 
     private onClose(): void {
         this.clearLatencyInterval();
+        this.rejectPending();
+        this.bestBlockSubId = null;
+        this.finalizedBlockSubId = null;
         this.onUpdate({ status: 'error' });
+        if (!this.deliberateClose) {
+            this.reconnectTimeout = setTimeout(() => {
+                this.connect();
+            }, RECONNECT_DELAY_MS);
+        }
     }
 
     private onMessage(event: MessageEvent): void {
@@ -139,10 +155,24 @@ class NodeClient {
         });
     }
 
+    private rejectPending(): void {
+        for (const { reject } of this.pending.values()) {
+            reject(new Error('disconnected'));
+        }
+        this.pending.clear();
+    }
+
     private clearLatencyInterval(): void {
         if (this.latencyInterval !== null) {
             clearInterval(this.latencyInterval);
             this.latencyInterval = null;
+        }
+    }
+
+    private clearReconnectTimeout(): void {
+        if (this.reconnectTimeout !== null) {
+            clearTimeout(this.reconnectTimeout);
+            this.reconnectTimeout = null;
         }
     }
 }
