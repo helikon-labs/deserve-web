@@ -55,10 +55,10 @@ body {
     stroke-width: 0.75;
 }
 
-.node-marker {
-    fill: #e6007a;
-    stroke: #ff80b5;
-    stroke-width: 1;
+.node-marker {                                                                                                                                                                                        
+    fill: #00d17a;                                                                                                                                                                                    
+    stroke: #80e8bc;                                                                                                                                                                                  
+    stroke-width: 1;                                                                                                                                                                                  
 }
 
 .node-label {
@@ -73,7 +73,7 @@ body {
     position: absolute;
     transform: translate(-50%, calc(-100% - 12px));
     background-color: #0d1f35;
-    border: 1px solid #e6007a;
+    border: 1px solid #00d17a;
     border-radius: 4px;
     padding: 6px 12px;
     color: #ffffff;
@@ -86,7 +86,7 @@ body {
 .tooltip-city {
     font-size: 13px;
     font-weight: 600;
-    color: #e6007a;
+    color: #00d17a;
     margin-bottom: 6px;
 }
 
