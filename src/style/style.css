@@ -218,13 +218,37 @@ svg {
     padding: 6px 10px;
 }
 
+.info-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+
 .info-title-name {
     font-size: 17px;
     font-weight: 700;
     color: var(--color-toggle-fg);
     opacity: 0.9;
     letter-spacing: 0.02em;
-    margin-bottom: 4px;
+}
+
+.info-github-link {
+    display: flex;
+    align-items: center;
+    color: var(--color-toggle-fg);
+    opacity: 0.6;
+    text-decoration: none;
+    transition: opacity 0.15s;
+}
+
+.info-github-link:hover {
+    opacity: 1;
+}
+
+.info-github-link svg {
+    width: 18px;
+    height: 18px;
 }
 
 .info-title-sub {
