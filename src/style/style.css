@@ -90,6 +90,13 @@ svg {
 .node-hit-area {
     fill: transparent;
     stroke: none;
+    display: none;
+}
+
+@media (max-width: 600px) {
+    .node-hit-area {
+        display: block;
+    }
 }
 
 .node-marker {
