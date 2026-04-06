@@ -16,7 +16,7 @@ await bootstrap();
 if (import.meta.hot) {
     import.meta.hot.dispose(() => {
         try {
-            app?.stop?.();
+            app?.stop();
         } finally {
             app = undefined;
         }

@@ -142,10 +142,16 @@ class WorldMap {
         if (!this.projection || !this.tooltip) return;
         const coords = this.projection([d.longitude, d.latitude]);
         if (!coords) return;
-        this.tooltip
-            .style('display', 'block')
-            .style('left', `${coords[0]}px`)
-            .style('top', `${coords[1]}px`);
+        this.tooltip.style('display', 'block').style('top', `${coords[1]}px`);
+        const padding = 8;
+        const tooltipWidth = this.tooltip.node()!.offsetWidth;
+        const containerWidth = this.mapContainer.getBoundingClientRect().width;
+        const rawLeft = coords[0] - tooltipWidth / 2;
+        const clampedLeft = Math.max(
+            padding,
+            Math.min(rawLeft, containerWidth - tooltipWidth - padding),
+        );
+        this.tooltip.style('left', `${clampedLeft}px`);
         this.activeUnsub?.();
         const stateAtom = nodeStateAtoms.get(d.id);
         if (!stateAtom) return;
