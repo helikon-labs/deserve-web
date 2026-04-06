@@ -1,3 +1,3 @@
 ## DeServe Web
 
-DeServe web page.
+DeServe network web application.
