@@ -3,6 +3,7 @@ import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import type { FeatureCollection, Geometry, GeoJsonProperties, Polygon, Feature } from 'geojson';
 import { getDOMElementById } from './dom';
+import { RPC_NODES, type RpcNode } from '@/data/node';
 
 type WorldTopology = Topology<{
     countries: GeometryCollection;
@@ -62,7 +63,9 @@ class WorldMap {
             this.svg.append('g').attr('class', 'countries');
         }
         this.svg.attr('viewBox', `0 0 ${width} ${height}`);
+        // ocean
         this.svg.select('rect.ocean').attr('width', width).attr('height', height);
+        // countries
         this.svg
             .select<SVGGElement>('g.countries')
             .selectAll('path')
@@ -70,14 +73,26 @@ class WorldMap {
             .join('path')
             .attr('d', path)
             .attr('class', 'country');
-        this.svg.select('rect.ocean').attr('width', width).attr('height', height);
+        // nodes
+        this.svg.append('g').attr('class', 'nodes');
         this.svg
-            .select<SVGGElement>('g.countries')
-            .selectAll('path')
-            .data(this.countries.features)
-            .join('path')
-            .attr('d', path)
-            .attr('class', 'country');
+            .select<SVGGElement>('g.nodes')
+            .selectAll<SVGGElement, RpcNode>('g.node')
+            .data(RPC_NODES, (d) => d.city)
+            .join((enter) => {
+                const g = enter.append('g').attr('class', 'node');
+                g.append('circle').attr('r', 5).attr('class', 'node-marker');
+                g.append('text')
+                    .attr('x', 8)
+                    .attr('y', 4)
+                    .attr('class', 'node-label')
+                    .text((d) => d.city);
+                return g;
+            })
+            .attr('transform', (d) => {
+                const coords = projection([d.longitude, d.latitude]);
+                return coords ? `translate(${coords[0]},${coords[1]})` : '';
+            });
     }
 }
 
