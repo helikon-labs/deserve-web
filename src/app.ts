@@ -5,9 +5,11 @@ import { logger } from './log/logger';
 import { UIEvent } from './event/ui';
 import { $counter } from './data/data-store';
 import { UI, type UIDelegate } from './ui/ui';
+import { RPCManager } from './rpc/rpc-manager';
 
 class App {
     private unsubs: Array<() => void> = [];
+    private readonly rpcManager: RPCManager;
     private readonly uiDelegate: UIDelegate = {};
     private readonly ui: UI;
 
@@ -21,6 +23,7 @@ class App {
     };
 
     constructor() {
+        this.rpcManager = new RPCManager();
         this.ui = new UI(this.uiDelegate);
     }
 
@@ -28,6 +31,7 @@ class App {
         eventBus.on(UIEvent.Layout.Resize, this.onLayoutChange);
         eventBus.on(AppEvent.Close, this.onClose);
         await this.ui.setup();
+        this.rpcManager.start();
     }
 
     async start() {
@@ -37,6 +41,7 @@ class App {
 
     async stop() {
         logger.info('Stop app.');
+        this.rpcManager.stop();
         eventBus.off(AppEvent.Close, this.onClose);
         eventBus.off(UIEvent.Layout.Resize, this.onLayoutChange);
         for (const unsub of this.unsubs) {

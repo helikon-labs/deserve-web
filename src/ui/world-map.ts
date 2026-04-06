@@ -3,7 +3,8 @@ import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import type { FeatureCollection, Geometry, GeoJsonProperties, Polygon, Feature } from 'geojson';
 import { getDOMElementById } from './dom';
-import { RPC_NODES, type RpcNode } from '@/data/node';
+import { RPC_NODES, type RPCNode } from '@/data/node';
+import { nodeStateAtoms, type NodeState } from '@/data/network-store';
 
 type WorldTopology = Topology<{
     countries: GeometryCollection;
@@ -31,6 +32,8 @@ class WorldMap {
     private readonly mapContainer: HTMLDivElement;
     private svg: Selection<SVGSVGElement, unknown, null, undefined> | null = null;
     private countries: FeatureCollection<Geometry | null, GeoJsonProperties> | null = null;
+    private tooltip: Selection<HTMLDivElement, unknown, null, undefined> | null = null;
+    private activeUnsub: (() => void) | null = null;
 
     constructor() {
         this.mapContainer = getDOMElementById('map-container', HTMLDivElement);
@@ -40,6 +43,7 @@ class WorldMap {
         const response = await fetch('/countries-110m.json');
         const world = (await response.json()) as WorldTopology;
         this.countries = feature(world, world.objects.countries);
+        this.tooltip = select(this.mapContainer).append('div').attr('class', 'node-tooltip');
         this.render();
     }
 
@@ -61,6 +65,7 @@ class WorldMap {
                 .attr('height', '100%');
             this.svg.append('rect').attr('class', 'ocean');
             this.svg.append('g').attr('class', 'countries');
+            this.svg.append('g').attr('class', 'nodes');
         }
         this.svg.attr('viewBox', `0 0 ${width} ${height}`);
         // ocean
@@ -74,25 +79,62 @@ class WorldMap {
             .attr('d', path)
             .attr('class', 'country');
         // nodes
-        this.svg.append('g').attr('class', 'nodes');
         this.svg
             .select<SVGGElement>('g.nodes')
-            .selectAll<SVGGElement, RpcNode>('g.node')
+            .selectAll<SVGGElement, RPCNode>('g.node')
             .data(RPC_NODES, (d) => d.city)
             .join((enter) => {
                 const g = enter.append('g').attr('class', 'node');
                 g.append('circle').attr('r', 5).attr('class', 'node-marker');
-                g.append('text')
-                    .attr('x', 8)
-                    .attr('y', 4)
-                    .attr('class', 'node-label')
-                    .text((d) => d.city);
                 return g;
             })
             .attr('transform', (d) => {
                 const coords = projection([d.longitude, d.latitude]);
                 return coords ? `translate(${coords[0]},${coords[1]})` : '';
+            })
+            .style('cursor', 'pointer')
+            .on('mouseenter', (_, d) => {
+                const coords = projection([d.longitude, d.latitude]);
+                if (!coords || !this.tooltip) return;
+                this.tooltip
+                    .style('display', 'block')
+                    .style('left', `${coords[0]}px`)
+                    .style('top', `${coords[1]}px`);
+                this.activeUnsub?.();
+                const stateAtom = nodeStateAtoms.get(d.id);
+                if (!stateAtom) return;
+                this.activeUnsub = stateAtom.subscribe((state) => {
+                    this.renderTooltipContent(d, state);
+                });
+            })
+            .on('mouseleave', () => {
+                this.activeUnsub?.();
+                this.activeUnsub = null;
+                this.tooltip?.style('display', 'none');
             });
+    }
+
+    private renderTooltipContent(node: RPCNode, state: NodeState): void {
+        if (!this.tooltip) return;
+        const best = state.bestBlock?.toLocaleString() ?? '—';
+        const finalized = state.finalizedBlock?.toLocaleString() ?? '—';
+        const latency = state.latencyMs !== null ? `${state.latencyMs} ms` : '—';
+        this.tooltip
+            .html(`                                                                                                                                                                               
+            <div class="tooltip-city">${node.city}</div>
+            <div class="tooltip-row">                                                                                                                                                                     
+                <span class="tooltip-label">Best</span>                                                                                                                                                   
+                <span class="tooltip-value">${best}</span>
+            </div>                                                                                                                                                                                        
+            <div class="tooltip-row">
+                <span class="tooltip-label">Finalized</span>
+                <span class="tooltip-value">${finalized}</span>                                                                                                                                           
+            </div>                                             
+            <div class="tooltip-row">                                                                                                                                                                     
+                <span class="tooltip-label">Latency</span>
+                <span class="tooltip-value">${latency}</span>
+            </div>                                                                                                                                                                                        
+        `);
     }
 }
 
