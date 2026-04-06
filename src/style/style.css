@@ -84,7 +84,7 @@ svg {
 .country {
     fill: var(--color-land);
     stroke: var(--color-land-stroke);
-    stroke-width: 0.75;
+    stroke-width: 0.6;
 }
 
 .node-hit-area {
