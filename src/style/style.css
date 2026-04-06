@@ -125,7 +125,6 @@ svg {
     font-size: 12px;
     font-weight: 500;
     white-space: nowrap;
-    pointer-events: none;
 }
 
 .tooltip-city {
@@ -149,6 +148,23 @@ svg {
 
 .tooltip-value {
     font-variant-numeric: tabular-nums;
+}
+
+.tooltip-copy-btn {
+    background: none;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    color: var(--color-tooltip-city);
+    text-decoration: underline;
+    text-decoration-style: dotted;
+    text-underline-offset: 2px;
+}
+
+.tooltip-copy-btn:hover {
+    opacity: 0.75;
 }
 
 .theme-toggle {

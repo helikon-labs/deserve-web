@@ -35,6 +35,7 @@ class WorldMap {
     private tooltip: Selection<HTMLDivElement, unknown, null, undefined> | null = null;
     private activeUnsub: (() => void) | null = null;
     private readonly pingUnsubs: Array<() => void> = [];
+    private hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
     constructor() {
         this.mapContainer = getDOMElementById('map-container', HTMLDivElement);
@@ -45,6 +46,12 @@ class WorldMap {
         const world = (await response.json()) as WorldTopology;
         this.countries = feature(world, world.objects.countries);
         this.tooltip = select(this.mapContainer).append('div').attr('class', 'node-tooltip');
+        this.tooltip.on('mouseenter', () => {
+            this.cancelHide();
+        });
+        this.tooltip.on('mouseleave', () => {
+            this.scheduleHide();
+        });
         this.render();
         this.setupPingSubscriptions();
     }
@@ -100,6 +107,7 @@ class WorldMap {
             })
             .style('cursor', 'pointer')
             .on('mouseenter', (_, d) => {
+                this.cancelHide();
                 const coords = projection([d.longitude, d.latitude]);
                 if (!coords || !this.tooltip) return;
                 this.tooltip
@@ -116,9 +124,7 @@ class WorldMap {
                 });
             })
             .on('mouseleave', () => {
-                this.activeUnsub?.();
-                this.activeUnsub = null;
-                this.tooltip?.style('display', 'none');
+                this.scheduleHide();
             });
     }
 
@@ -127,22 +133,56 @@ class WorldMap {
         const best = state.bestBlock?.toLocaleString() ?? '—';
         const finalized = state.finalizedBlock?.toLocaleString() ?? '—';
         const latency = state.latencyMs !== null ? `${state.latencyMs} ms` : '—';
-        this.tooltip
-            .html(`                                                                                                                                                                               
+        this.tooltip.html(`
             <div class="tooltip-city">${node.city}</div>
-            <div class="tooltip-row">                                                                                                                                                                     
-                <span class="tooltip-label">Best</span>                                                                                                                                                   
+            <div class="tooltip-row">
+                <span class="tooltip-label">Best</span>
                 <span class="tooltip-value">${best}</span>
-            </div>                                                                                                                                                                                        
+            </div>
             <div class="tooltip-row">
                 <span class="tooltip-label">Finalized</span>
-                <span class="tooltip-value">${finalized}</span>                                                                                                                                           
-            </div>                                             
-            <div class="tooltip-row">                                                                                                                                                                     
+                <span class="tooltip-value">${finalized}</span>
+            </div>
+            <div class="tooltip-row">
                 <span class="tooltip-label">Latency</span>
                 <span class="tooltip-value">${latency}</span>
-            </div>                                                                                                                                                                                        
+            </div>
+            <div class="tooltip-row">
+                <span class="tooltip-label">Endpoint</span>
+                <button class="tooltip-copy-btn">copy url</button>
+            </div>
         `);
+        const btn = this.tooltip.select<HTMLButtonElement>('.tooltip-copy-btn').node();
+        if (btn) {
+            btn.addEventListener('click', () => {
+                void navigator.clipboard
+                    .writeText(node.wsURL)
+                    .then(() => {
+                        btn.textContent = 'copied!';
+                        setTimeout(() => {
+                            btn.textContent = 'copy url';
+                        }, 2000);
+                    })
+                    .catch(() => {
+                        /* clipboard unavailable, no-op */
+                    });
+            });
+        }
+    }
+
+    private scheduleHide(): void {
+        this.hideTimeout = setTimeout(() => {
+            this.activeUnsub?.();
+            this.activeUnsub = null;
+            this.tooltip?.style('display', 'none');
+        }, 120);
+    }
+
+    private cancelHide(): void {
+        if (this.hideTimeout !== null) {
+            clearTimeout(this.hideTimeout);
+            this.hideTimeout = null;
+        }
     }
 
     private setupPingSubscriptions(): void {
@@ -172,6 +212,7 @@ class WorldMap {
     }
 
     destroy(): void {
+        this.cancelHide();
         this.activeUnsub?.();
         this.activeUnsub = null;
         for (const unsub of this.pingUnsubs) {
