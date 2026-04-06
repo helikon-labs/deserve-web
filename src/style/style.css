@@ -28,7 +28,23 @@ body {
     padding: 0;
     width: 100%;
     height: 100%;
-    background-color: red;
+}
+
+#map-container {
+    margin: 0;
+    padding: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.ocean {
+    fill: #0d1f35;
+}
+
+.country {
+    fill: #2e4a6e;
+    stroke: #0d1f35;
+    stroke-width: 0.75;
 }
 
 @media (prefers-color-scheme: light) {

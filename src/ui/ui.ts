@@ -1,31 +1,36 @@
-import { AppEvent, eventBus } from "@/event/event";
-import { getDOMElementById } from "./dom";
-import { logger } from "@/log/logger";
+import { AppEvent, eventBus } from '@/event/event';
+import { getDOMElementById } from './dom';
+import { logger } from '@/log/logger';
+import { WorldMap } from './world-map';
 
-export interface UIDelegate {}
+interface UIDelegate {}
 
-export class UI {
-    private readonly appContainer: HTMLDivElement;
-
+class UI {
     private delegate: UIDelegate;
+    private readonly appContainer: HTMLDivElement;
+    private readonly map: WorldMap;
+    private readonly onResize = (): void => {
+        logger.info('resize');
+        this.map.resize();
+        eventBus.emit(AppEvent.UI.Layout.Resize, {
+            width: this.appContainer.clientWidth,
+            height: this.appContainer.clientHeight,
+        });
+    };
 
     constructor(delegate: UIDelegate) {
         this.delegate = delegate;
         this.appContainer = getDOMElementById('app-container', HTMLDivElement);
-        this.setup();
+        this.map = new WorldMap();
     }
 
-    private setup() {
-        window.addEventListener('resize', () => {
-            logger.info('resize');
-            eventBus.emit(
-                AppEvent.UI.Layout.Resize,
-                { width: this.appContainer.clientWidth, height: this.appContainer.clientHeight },
-            );
-        });
+    async setup() {
+        window.addEventListener('resize', this.onResize);
+        await this.map.setup();
     }
 
-    start() {
-        this.appContainer.innerHTML = `<div>hello!</div>`;
-    }
+    start() {}
 }
+
+export type { UIDelegate };
+export { UI };

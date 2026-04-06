@@ -3,14 +3,15 @@ import { App } from '@/app';
 
 let app: App | undefined;
 
-function bootstrap() {
+async function bootstrap() {
     if (!app) {
         app = new App();
-        app.start();
+        await app.setup();
+        await app.start();
     }
 }
 
-bootstrap();
+await bootstrap();
 
 if (import.meta.hot) {
     import.meta.hot.dispose(() => {

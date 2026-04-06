@@ -8,27 +8,30 @@ import { UI, type UIDelegate } from './ui/ui';
 
 class App {
     private unsubs: Array<() => void> = [];
-    private readonly uiDelegate: UIDelegate = {}
+    private readonly uiDelegate: UIDelegate = {};
     private readonly ui: UI;
+
+    private readonly onClose = async (event: EventMap[typeof AppEvent.Close]): Promise<void> => {
+        logger.info('Close', event.id);
+    };
+    private readonly onLayoutChange = async (
+        event: EventMap[typeof UIEvent.Layout.Resize],
+    ): Promise<void> => {
+        logger.info('New w/h:', event.width, event.height);
+    };
 
     constructor() {
         this.ui = new UI(this.uiDelegate);
-        this.setup();
     }
 
-    private setup() {
+    async setup() {
         eventBus.on(UIEvent.Layout.Resize, this.onLayoutChange);
-    }
-
-    private async onClose(event: EventMap[typeof AppEvent.Close]): Promise<void> {
-        logger.info('Close', event.id);
-    }
-
-    private async onLayoutChange(event: EventMap[typeof UIEvent.Layout.Resize]): Promise<void> {
-        logger.info('New w/h:', event.width, event.height);
+        eventBus.on(AppEvent.Close, this.onClose);
+        await this.ui.setup();
     }
 
     async start() {
+        logger.info('Start app.');
         this.ui.start();
     }
 
@@ -42,7 +45,6 @@ class App {
         this.unsubs = [];
         $counter.set(0);
     }
-
 
     /*
     setupCounter(document.querySelector<HTMLButtonElement>('#counter')!);
