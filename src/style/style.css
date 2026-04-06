@@ -269,10 +269,26 @@ svg {
 }
 
 @media (max-width: 600px) {
+    body {
+        height: 100dvh;
+    }
+
+    .theme-toggle {
+        width: 28px;
+        height: 28px;
+        top: 12px;
+        right: 12px;
+    }
+
+    .theme-toggle svg {
+        width: 13px;
+        height: 13px;
+    }
+
     .info-panel {
-        bottom: 16px;
+        bottom: 80px;
         left: 16px;
-        right: 56px;
+        right: 48px;
     }
 
     .info-title-name {

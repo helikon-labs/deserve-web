@@ -74,6 +74,11 @@ class WorldMap {
         }
         const { clientWidth: width, clientHeight: height } = this.mapContainer;
         this.projection = geoMercator().fitSize([width, height], WORLD_BOUNDS);
+        if (height > width) {
+            // portrait (mobile): shift map upward so nodes aren't hidden behind the info panel
+            const [tx, ty] = this.projection.translate();
+            this.projection.translate([tx, ty - height * 0.08]);
+        }
         const path = geoPath().projection(this.projection);
         if (!this.svg) {
             this.svg = select(this.mapContainer)
