@@ -3,10 +3,7 @@ import { getDOMElementById } from './dom';
 import { logger } from '@/log/logger';
 import { WorldMap } from './world-map';
 
-interface UIDelegate {}
-
 class UI {
-    private delegate: UIDelegate;
     private readonly appContainer: HTMLDivElement;
     private readonly map: WorldMap;
     private readonly onResize = (): void => {
@@ -18,8 +15,7 @@ class UI {
         });
     };
 
-    constructor(delegate: UIDelegate) {
-        this.delegate = delegate;
+    constructor() {
         this.appContainer = getDOMElementById('app-container', HTMLDivElement);
         this.map = new WorldMap();
     }
@@ -29,8 +25,12 @@ class UI {
         await this.map.setup();
     }
 
-    start() {}
+    start(): void {}
+
+    destroy(): void {
+        window.removeEventListener('resize', this.onResize);
+        this.map.destroy();
+    }
 }
 
-export type { UIDelegate };
 export { UI };

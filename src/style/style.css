@@ -55,17 +55,10 @@ body {
     stroke-width: 0.75;
 }
 
-.node-marker {                                                                                                                                                                                        
-    fill: #00d17a;                                                                                                                                                                                    
-    stroke: #80e8bc;                                                                                                                                                                                  
-    stroke-width: 1;                                                                                                                                                                                  
-}
-
-.node-label {
-    fill: #ffffff;
-    font-size: 11px;
-    font-weight: 500;
-    pointer-events: none;
+.node-marker {
+    fill: #00d17a;
+    stroke: #80e8bc;
+    stroke-width: 1;
 }
 
 .node-tooltip {
@@ -104,4 +97,26 @@ body {
 
 .tooltip-value {
     font-variant-numeric: tabular-nums;
+}
+
+.node-ping {
+    fill: none;
+    stroke: #00d17a;
+    stroke-width: 1.5;
+    vector-effect: non-scaling-stroke;
+}
+
+.node-ping.active {
+    animation: radar-ping 1.2s ease-out forwards;
+}
+
+@keyframes radar-ping {
+    0% {
+        transform: scale(1);
+        stroke-opacity: 0.8;
+    }
+    100% {
+        transform: scale(5);
+        stroke-opacity: 0;
+    }
 }

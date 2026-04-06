@@ -7,7 +7,7 @@ async function bootstrap() {
     if (!app) {
         app = new App();
         await app.setup();
-        await app.start();
+        app.start();
     }
 }
 

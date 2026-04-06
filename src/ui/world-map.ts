@@ -34,6 +34,7 @@ class WorldMap {
     private countries: FeatureCollection<Geometry | null, GeoJsonProperties> | null = null;
     private tooltip: Selection<HTMLDivElement, unknown, null, undefined> | null = null;
     private activeUnsub: (() => void) | null = null;
+    private readonly pingUnsubs: Array<() => void> = [];
 
     constructor() {
         this.mapContainer = getDOMElementById('map-container', HTMLDivElement);
@@ -45,6 +46,7 @@ class WorldMap {
         this.countries = feature(world, world.objects.countries);
         this.tooltip = select(this.mapContainer).append('div').attr('class', 'node-tooltip');
         this.render();
+        this.setupPingSubscriptions();
     }
 
     resize() {
@@ -82,9 +84,13 @@ class WorldMap {
         this.svg
             .select<SVGGElement>('g.nodes')
             .selectAll<SVGGElement, RPCNode>('g.node')
-            .data(RPC_NODES, (d) => d.city)
+            .data(RPC_NODES, (d) => d.id)
             .join((enter) => {
-                const g = enter.append('g').attr('class', 'node');
+                const g = enter
+                    .append('g')
+                    .attr('class', 'node')
+                    .attr('data-id', (d) => d.id);
+                g.append('circle').attr('r', 5).attr('class', 'node-ping');
                 g.append('circle').attr('r', 5).attr('class', 'node-marker');
                 return g;
             })
@@ -103,6 +109,8 @@ class WorldMap {
                 this.activeUnsub?.();
                 const stateAtom = nodeStateAtoms.get(d.id);
                 if (!stateAtom) return;
+                // nanostores fires subscribe synchronously with the current value,
+                // so content is set before the browser paints despite appearing after display:block
                 this.activeUnsub = stateAtom.subscribe((state) => {
                     this.renderTooltipContent(d, state);
                 });
@@ -135,6 +143,41 @@ class WorldMap {
                 <span class="tooltip-value">${latency}</span>
             </div>                                                                                                                                                                                        
         `);
+    }
+
+    private setupPingSubscriptions(): void {
+        for (const node of RPC_NODES) {
+            const stateAtom = nodeStateAtoms.get(node.id);
+            if (!stateAtom) continue;
+            let lastBestBlock: number | null = null;
+            const unsub = stateAtom.subscribe((state) => {
+                if (state.bestBlock !== null && state.bestBlock !== lastBestBlock) {
+                    lastBestBlock = state.bestBlock;
+                    this.triggerPing(node.id);
+                }
+            });
+            this.pingUnsubs.push(unsub);
+        }
+    }
+
+    private triggerPing(nodeId: number): void {
+        if (!this.svg) return;
+        const el = this.svg
+            .select<SVGCircleElement>(`[data-id="${nodeId}"] circle.node-ping`)
+            .node();
+        if (!el) return;
+        el.classList.remove('active');
+        void el.getBoundingClientRect(); // force reflow to restart animation
+        el.classList.add('active');
+    }
+
+    destroy(): void {
+        this.activeUnsub?.();
+        this.activeUnsub = null;
+        for (const unsub of this.pingUnsubs) {
+            unsub();
+        }
+        this.pingUnsubs.length = 0;
     }
 }
 
