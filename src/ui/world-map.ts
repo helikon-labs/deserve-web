@@ -96,7 +96,7 @@ class WorldMap {
         this.svg
             .select<SVGGElement>('g.countries')
             .selectAll('path')
-            .data(this.countries.features)
+            .data(this.countries.features.filter((f) => f.id !== '010'))
             .join('path')
             .attr('d', path)
             .attr('class', 'country');
