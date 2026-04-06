@@ -1,4 +1,13 @@
-import { select, geoMercator, geoPath, type Selection } from 'd3';
+import {
+    select,
+    geoMercator,
+    geoPath,
+    zoom,
+    zoomIdentity,
+    type Selection,
+    type ZoomBehavior,
+    type ZoomTransform,
+} from 'd3';
 import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import type { FeatureCollection, Geometry, GeoJsonProperties, Polygon, Feature } from 'geojson';
@@ -28,12 +37,17 @@ const WORLD_BOUNDS: Feature<Polygon> = {
     properties: null,
 };
 
+const NODE_RADIUS = 5;
+const HIT_RADIUS = 16;
+
 class WorldMap {
     private readonly mapContainer: HTMLDivElement;
     private svg: Selection<SVGSVGElement, unknown, null, undefined> | null = null;
     private countries: FeatureCollection<Geometry | null, GeoJsonProperties> | null = null;
     private tooltip: Selection<HTMLDivElement, unknown, null, undefined> | null = null;
     private projection: ReturnType<typeof geoMercator> | null = null;
+    private zoomBehavior: ZoomBehavior<SVGSVGElement, unknown> | null = null;
+    private currentTransform: ZoomTransform = zoomIdentity;
     private activeUnsub: (() => void) | null = null;
     private readonly pingUnsubs: Array<() => void> = [];
     private hideTimeout: ReturnType<typeof setTimeout> | null = null;
@@ -66,6 +80,10 @@ class WorldMap {
 
     resize() {
         this.render();
+        // Reset zoom when the projection is recalculated
+        if (this.svg && this.zoomBehavior) {
+            this.svg.call(this.zoomBehavior.transform, zoomIdentity);
+        }
     }
 
     private render() {
@@ -86,8 +104,32 @@ class WorldMap {
                 .attr('width', '100%')
                 .attr('height', '100%');
             this.svg.append('rect').attr('class', 'ocean');
-            this.svg.append('g').attr('class', 'countries');
-            this.svg.append('g').attr('class', 'nodes');
+            const mapContent = this.svg.append('g').attr('class', 'map-content');
+            mapContent.append('g').attr('class', 'countries');
+            mapContent.append('g').attr('class', 'nodes');
+
+            this.zoomBehavior = zoom<SVGSVGElement, unknown>()
+                .scaleExtent([1, 8])
+                .on('start', () => {
+                    this.scheduleHide();
+                })
+                .on('zoom', (event: { transform: ZoomTransform }) => {
+                    this.currentTransform = event.transform;
+                    this.svg
+                        ?.select<SVGGElement>('g.map-content')
+                        .attr('transform', event.transform.toString());
+                    const k = event.transform.k;
+                    this.svg
+                        ?.selectAll<SVGCircleElement, RPCNode>('circle.node-marker')
+                        .attr('r', NODE_RADIUS / k);
+                    this.svg
+                        ?.selectAll<SVGCircleElement, RPCNode>('circle.node-hit-area')
+                        .attr('r', HIT_RADIUS / k);
+                    this.svg
+                        ?.selectAll<SVGCircleElement, RPCNode>('circle.node-ping')
+                        .attr('r', NODE_RADIUS / k);
+                });
+            this.svg.call(this.zoomBehavior);
         }
         this.svg.attr('viewBox', `0 0 ${width} ${height}`);
         // ocean
@@ -110,9 +152,9 @@ class WorldMap {
                     .append('g')
                     .attr('class', 'node')
                     .attr('data-id', (d) => d.id);
-                g.append('circle').attr('r', 16).attr('class', 'node-hit-area');
-                g.append('circle').attr('r', 5).attr('class', 'node-ping');
-                g.append('circle').attr('r', 5).attr('class', 'node-marker');
+                g.append('circle').attr('r', HIT_RADIUS).attr('class', 'node-hit-area');
+                g.append('circle').attr('r', NODE_RADIUS).attr('class', 'node-ping');
+                g.append('circle').attr('r', NODE_RADIUS).attr('class', 'node-marker');
                 return g;
             })
             .attr('transform', (d) => {
@@ -140,16 +182,17 @@ class WorldMap {
     private showTooltipForNode(d: RPCNode): void {
         this.cancelHide();
         if (!this.projection || !this.tooltip) return;
-        const coords = this.projection([d.longitude, d.latitude]);
-        if (!coords) return;
-        this.tooltip.style('display', 'block').style('top', `${coords[1]}px`);
+        const baseCoords = this.projection([d.longitude, d.latitude]);
+        if (!baseCoords) return;
+        // Apply current zoom transform to get actual screen position
+        const [x, y] = this.currentTransform.apply(baseCoords);
+        this.tooltip.style('display', 'block').style('top', `${y}px`);
         const padding = 8;
         const tooltipWidth = this.tooltip.node()!.offsetWidth;
         const containerWidth = this.mapContainer.getBoundingClientRect().width;
-        const rawLeft = coords[0] - tooltipWidth / 2;
         const clampedLeft = Math.max(
             padding,
-            Math.min(rawLeft, containerWidth - tooltipWidth - padding),
+            Math.min(x - tooltipWidth / 2, containerWidth - tooltipWidth - padding),
         );
         this.tooltip.style('left', `${clampedLeft}px`);
         this.activeUnsub?.();

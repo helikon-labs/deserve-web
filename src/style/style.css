@@ -94,6 +94,7 @@ svg {
     fill: var(--color-node);
     stroke: var(--color-node-stroke);
     stroke-width: 1;
+    vector-effect: non-scaling-stroke;
 }
 
 .node-ping {
