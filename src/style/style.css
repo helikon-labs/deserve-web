@@ -7,6 +7,7 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
+    --color-url: #00d17a;
     --color-ocean: #0d1f35;
     --color-land: #2e4a6e;
     --color-land-stroke: #0d1f35;
@@ -28,9 +29,10 @@
 [data-theme='light'] {
     color-scheme: light;
 
-    --color-ocean: #b8d0e8;
-    --color-land: #d8e8f4;
-    --color-land-stroke: #b8d0e8;
+    --color-url: #006e3d;
+    --color-ocean: #7aaac8;
+    --color-land: #b8c8d8;
+    --color-land-stroke: #8898a8;
     --color-node: #007a47;
     --color-node-stroke: #00a86b;
     --color-tooltip-bg: #ffffff;
@@ -214,9 +216,9 @@ svg {
 
 .info-url {
     font-family: monospace;
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
-    color: var(--color-node);
+    color: var(--color-url);
 }
 
 .copy-button {
