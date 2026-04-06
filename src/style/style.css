@@ -2,22 +2,44 @@
     font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
     font-weight: 400;
-
-    color-scheme: light dark;
-    color: rgba(255, 255, 255, 0.87);
-    background-color: #242424;
-
     font-synthesis: none;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+
+    --color-ocean: #0d1f35;
+    --color-land: #2e4a6e;
+    --color-land-stroke: #0d1f35;
+    --color-node: #00d17a;
+    --color-node-stroke: #80e8bc;
+    --color-tooltip-bg: #0d1f35;
+    --color-tooltip-border: #00d17a;
+    --color-tooltip-text: #ffffff;
+    --color-tooltip-label: rgba(255, 255, 255, 0.5);
+    --color-tooltip-city: #00d17a;
+    --color-toggle-bg: rgba(255, 255, 255, 0.08);
+    --color-toggle-fg: #ffffff;
 }
 
-@media (prefers-color-scheme: light) {
-    :root {
-        color: #213547;
-        background-color: #ffffff;
-    }
+[data-theme='dark'] {
+    color-scheme: dark;
+}
+
+[data-theme='light'] {
+    color-scheme: light;
+
+    --color-ocean: #b8d0e8;
+    --color-land: #d8e8f4;
+    --color-land-stroke: #b8d0e8;
+    --color-node: #007a47;
+    --color-node-stroke: #00a86b;
+    --color-tooltip-bg: #ffffff;
+    --color-tooltip-border: #007a47;
+    --color-tooltip-text: #1a2a3a;
+    --color-tooltip-label: rgba(0, 0, 0, 0.5);
+    --color-tooltip-city: #007a47;
+    --color-toggle-bg: rgba(0, 0, 0, 0.08);
+    --color-toggle-fg: #1a2a3a;
 }
 
 body {
@@ -45,63 +67,29 @@ body {
     height: 100%;
 }
 
+svg {
+    display: block;
+}
+
 .ocean {
-    fill: #0d1f35;
+    fill: var(--color-ocean);
 }
 
 .country {
-    fill: #2e4a6e;
-    stroke: #0d1f35;
+    fill: var(--color-land);
+    stroke: var(--color-land-stroke);
     stroke-width: 0.75;
 }
 
 .node-marker {
-    fill: #00d17a;
-    stroke: #80e8bc;
+    fill: var(--color-node);
+    stroke: var(--color-node-stroke);
     stroke-width: 1;
-}
-
-.node-tooltip {
-    display: none;
-    position: absolute;
-    transform: translate(-50%, calc(-100% - 12px));
-    background-color: #0d1f35;
-    border: 1px solid #00d17a;
-    border-radius: 4px;
-    padding: 6px 12px;
-    color: #ffffff;
-    font-size: 12px;
-    font-weight: 500;
-    white-space: nowrap;
-    pointer-events: none;
-}
-
-.tooltip-city {
-    font-size: 13px;
-    font-weight: 600;
-    color: #00d17a;
-    margin-bottom: 6px;
-}
-
-.tooltip-row {
-    display: flex;
-    justify-content: space-between;
-    gap: 16px;
-    font-size: 11px;
-    line-height: 1.8;
-}
-
-.tooltip-label {
-    color: rgba(255, 255, 255, 0.5);
-}
-
-.tooltip-value {
-    font-variant-numeric: tabular-nums;
 }
 
 .node-ping {
     fill: none;
-    stroke: #00d17a;
+    stroke: var(--color-node);
     stroke-width: 1.5;
     vector-effect: non-scaling-stroke;
 }
@@ -119,4 +107,73 @@ body {
         transform: scale(5);
         stroke-opacity: 0;
     }
+}
+
+.node-tooltip {
+    display: none;
+    position: absolute;
+    transform: translate(-50%, calc(-100% - 12px));
+    background-color: var(--color-tooltip-bg);
+    border: 1px solid var(--color-tooltip-border);
+    border-radius: 4px;
+    padding: 6px 12px;
+    color: var(--color-tooltip-text);
+    font-size: 12px;
+    font-weight: 500;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.tooltip-city {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-tooltip-city);
+    margin-bottom: 6px;
+}
+
+.tooltip-row {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    font-size: 11px;
+    line-height: 1.8;
+}
+
+.tooltip-label {
+    color: var(--color-tooltip-label);
+}
+
+.tooltip-value {
+    font-variant-numeric: tabular-nums;
+}
+
+.theme-toggle {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    width: 36px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--color-toggle-bg);
+    color: var(--color-toggle-fg);
+    border: 1px solid var(--color-tooltip-border);
+    border-radius: 6px;
+    cursor: pointer;
+    z-index: 10;
+    transition:
+        background 0.15s,
+        color 0.15s;
+}
+
+.theme-toggle:hover {
+    background: var(--color-tooltip-border);
+    color: var(--color-tooltip-bg);
+}
+
+.theme-toggle svg {
+    width: 16px;
+    height: 16px;
+    stroke: currentColor;
 }
