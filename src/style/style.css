@@ -20,6 +20,7 @@
     --color-tooltip-city: #00d17a;
     --color-toggle-bg: rgba(255, 255, 255, 0.08);
     --color-toggle-fg: #ffffff;
+    --color-info-bg: rgba(13, 31, 53, 0.75);
 }
 
 [data-theme='dark'] {
@@ -42,6 +43,7 @@
     --color-tooltip-city: #1a3a5c;
     --color-toggle-bg: rgba(0, 0, 0, 0.08);
     --color-toggle-fg: #1a2a3a;
+    --color-info-bg: rgba(255, 255, 255, 0.75);
 }
 
 body {
@@ -210,6 +212,10 @@ svg {
     bottom: 24px;
     left: 24px;
     z-index: 10;
+    background: var(--color-info-bg);
+    border: 1px solid var(--color-tooltip-border);
+    border-radius: 6px;
+    padding: 6px 10px;
 }
 
 .info-title-name {
@@ -287,9 +293,9 @@ svg {
     }
 
     .info-panel {
-        bottom: 80px;
+        bottom: 16px;
         left: 16px;
-        right: 48px;
+        right: 16px;
     }
 
     .info-title-name {
