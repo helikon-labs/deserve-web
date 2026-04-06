@@ -21,10 +21,6 @@ class ThemeManager {
         localStorage.setItem(STORAGE_KEY, this.current);
     }
 
-    private systemTheme(): Theme {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-    }
-
     private apply(): void {
         document.documentElement.setAttribute('data-theme', this.current);
     }

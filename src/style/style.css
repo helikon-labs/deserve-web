@@ -29,17 +29,17 @@
 [data-theme='light'] {
     color-scheme: light;
 
-    --color-url: #006e3d;
+    --color-url: #0a4a7a;
     --color-ocean: #7aaac8;
     --color-land: #b8c8d8;
     --color-land-stroke: #8898a8;
-    --color-node: #007a47;
-    --color-node-stroke: #00a86b;
+    --color-node: #1a3a5c;
+    --color-node-stroke: #4a6a8c;
     --color-tooltip-bg: #ffffff;
-    --color-tooltip-border: #007a47;
+    --color-tooltip-border: #1a3a5c;
     --color-tooltip-text: #1a2a3a;
     --color-tooltip-label: rgba(0, 0, 0, 0.5);
-    --color-tooltip-city: #007a47;
+    --color-tooltip-city: #1a3a5c;
     --color-toggle-bg: rgba(0, 0, 0, 0.08);
     --color-toggle-fg: #1a2a3a;
 }
@@ -119,8 +119,8 @@ svg {
     transform: translate(-50%, calc(-100% - 12px));
     background-color: var(--color-tooltip-bg);
     border: 1px solid var(--color-tooltip-border);
-    border-radius: 4px;
-    padding: 6px 12px;
+    border-radius: 3px;
+    padding: 4px 8px;
     color: var(--color-tooltip-text);
     font-size: 12px;
     font-weight: 500;
@@ -132,7 +132,7 @@ svg {
     font-size: 13px;
     font-weight: 600;
     color: var(--color-tooltip-city);
-    margin-bottom: 6px;
+    margin-bottom: 4px;
 }
 
 .tooltip-row {
@@ -195,11 +195,11 @@ svg {
     color: var(--color-toggle-fg);
     opacity: 0.9;
     letter-spacing: 0.02em;
-    margin-bottom: 2px;
+    margin-bottom: 4px;
 }
 
 .info-title-sub {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: 500;
     color: var(--color-toggle-fg);
     opacity: 0.75;
@@ -227,7 +227,7 @@ svg {
     padding: 2px;
     cursor: pointer;
     color: var(--color-toggle-fg);
-    opacity: 0.5;
+    opacity: 0.6;
     display: flex;
     align-items: center;
     transition:

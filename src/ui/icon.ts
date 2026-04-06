@@ -13,3 +13,12 @@ export const SUN_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" st
 export const MOON_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">                                                                                  
       <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
   </svg>`;
+
+export const COPY_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">                                                                                  
+      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
+      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>                                                                                                                                  
+  </svg>`;
+
+export const CHECK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">                                                                                 
+      <polyline points="20 6 9 17 4 12"/>
+  </svg>`;

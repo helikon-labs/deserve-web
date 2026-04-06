@@ -3,18 +3,9 @@ import { getDOMElementById } from './dom';
 import { logger } from '@/log/logger';
 import { WorldMap } from './world-map';
 import { ThemeManager } from './theme';
-import { MOON_SVG, SUN_SVG } from './icon';
+import { MOON_SVG, SUN_SVG, COPY_SVG, CHECK_SVG } from './icon';
 
 const GEO_ENDPOINT = 'wss://asset-hub.polkadot.rpc.deserve.network';
-
-const COPY_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">                                                                                  
-      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"/>
-      <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/>                                                                                                                                  
-  </svg>`;
-
-const CHECK_SVG = `<svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">                                                                                 
-      <polyline points="20 6 9 17 4 12"/>
-  </svg>`;
 
 class UI {
     private readonly appContainer: HTMLDivElement;
