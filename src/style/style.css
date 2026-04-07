@@ -240,6 +240,12 @@ svg {
     letter-spacing: 0.02em;
 }
 
+.info-link-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
 .info-github-link {
     display: flex;
     align-items: center;

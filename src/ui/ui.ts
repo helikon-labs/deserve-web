@@ -3,7 +3,7 @@ import { getDOMElementById } from './dom';
 import { logger } from '@/log/logger';
 import { WorldMap } from './world-map';
 import { ThemeManager } from './theme';
-import { MOON_SVG, SUN_SVG, COPY_SVG, CHECK_SVG, GITHUB_SVG } from './icon';
+import { MOON_SVG, SUN_SVG, COPY_SVG, CHECK_SVG, GITHUB_SVG, DOCS_SVG } from './icon';
 
 const GEO_ENDPOINT = 'wss://asset-hub.polkadot.rpc.deserve.network';
 
@@ -67,6 +67,14 @@ class UI {
         titleName.className = 'info-title-name';
         titleName.textContent = 'DeServe.network';
 
+        const docsLink = document.createElement('a');
+        docsLink.className = 'info-github-link';
+        docsLink.href = 'https://docs.deserve.network';
+        docsLink.target = '_blank';
+        docsLink.rel = 'noopener noreferrer';
+        docsLink.setAttribute('aria-label', 'Documentation');
+        docsLink.innerHTML = DOCS_SVG;
+
         const githubLink = document.createElement('a');
         githubLink.className = 'info-github-link';
         githubLink.href = 'https://github.com/helikon-labs/deserve-web';
@@ -75,8 +83,13 @@ class UI {
         githubLink.setAttribute('aria-label', 'GitHub repository');
         githubLink.innerHTML = GITHUB_SVG;
 
+        const linkRow = document.createElement('div');
+        linkRow.className = 'info-link-row';
+        linkRow.appendChild(docsLink);
+        linkRow.appendChild(githubLink);
+
         titleRow.appendChild(titleName);
-        titleRow.appendChild(githubLink);
+        titleRow.appendChild(linkRow);
 
         const titleSub = document.createElement('div');
         titleSub.className = 'info-title-sub';
