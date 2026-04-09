@@ -15,6 +15,13 @@ import { getDOMElementById } from './dom';
 import { RPC_NODES, getNodes, type RPCNode } from '@/data/node';
 import { nodeStateAtoms, type NodeState } from '@/data/network-store';
 import { selectedChain } from '@/data/chain-store';
+import { ASSET_HUB_SVG, CORETIME_SVG } from './icon';
+import type { Chain } from '@/data/node';
+
+const CHAIN_ICONS: Record<Chain, string> = {
+    'asset-hub': ASSET_HUB_SVG,
+    coretime: CORETIME_SVG,
+};
 
 type WorldTopology = Topology<{
     countries: GeometryCollection;
@@ -209,11 +216,12 @@ class WorldMap {
 
     private renderTooltipContent(node: RPCNode, state: NodeState): void {
         if (!this.tooltip) return;
+        const chainIcon = CHAIN_ICONS[selectedChain.get()];
         const best = state.bestBlock?.toLocaleString() ?? '—';
         const finalized = state.finalizedBlock?.toLocaleString() ?? '—';
         const latency = state.latencyMs !== null ? `${state.latencyMs} ms` : '—';
         this.tooltip.html(`
-            <div class="tooltip-city">${node.city}</div>
+            <div class="tooltip-city"><span class="tooltip-chain-icon">${chainIcon}</span>${node.city}</div>
             <div class="tooltip-row">
                 <span class="tooltip-label">Best</span>
                 <span class="tooltip-value">${best}</span>

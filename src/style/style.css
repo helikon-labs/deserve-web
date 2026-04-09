@@ -138,10 +138,29 @@ svg {
 }
 
 .tooltip-city {
+    display: flex;
+    align-items: center;
+    gap: 5px;
     font-size: 13px;
     font-weight: 600;
     color: var(--color-tooltip-city);
     margin-bottom: 4px;
+}
+
+.tooltip-chain-icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.tooltip-chain-icon svg {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}
+
+[data-theme='dark'] .tooltip-chain-icon svg {
+    filter: invert(1);
 }
 
 .tooltip-row {
