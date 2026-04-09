@@ -51,6 +51,7 @@ class WorldMap {
     private currentTransform: ZoomTransform = zoomIdentity;
     private activeUnsub: (() => void) | null = null;
     private readonly pingUnsubs: Array<() => void> = [];
+    private readonly lastBestBlocks: Map<number, number | null> = new Map();
     private hideTimeout: ReturnType<typeof setTimeout> | null = null;
 
     private readonly onContainerTouchStart = (): void => {
@@ -269,14 +270,33 @@ class WorldMap {
         for (const node of RPC_NODES) {
             const stateAtom = nodeStateAtoms.get(node.id);
             if (!stateAtom) continue;
-            let lastBestBlock: number | null = null;
+            this.lastBestBlocks.set(node.id, null);
             const unsub = stateAtom.subscribe((state) => {
-                if (state.bestBlock !== null && state.bestBlock !== lastBestBlock) {
-                    lastBestBlock = state.bestBlock;
+                const last = this.lastBestBlocks.get(node.id) ?? null;
+                if (state.bestBlock !== null && state.bestBlock !== last) {
+                    this.lastBestBlocks.set(node.id, state.bestBlock);
                     this.triggerPing(node.id);
                 }
             });
             this.pingUnsubs.push(unsub);
+        }
+        let chainInitial = true;
+        this.pingUnsubs.push(
+            selectedChain.subscribe(() => {
+                if (chainInitial) {
+                    chainInitial = false;
+                    return;
+                }
+                this.clearPingAnimations();
+            }),
+        );
+    }
+
+    private clearPingAnimations(): void {
+        if (!this.svg) return;
+        this.svg.selectAll<SVGCircleElement, RPCNode>('circle.node-ping').classed('active', false);
+        for (const key of this.lastBestBlocks.keys()) {
+            this.lastBestBlocks.set(key, null);
         }
     }
 
