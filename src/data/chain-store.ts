@@ -15,7 +15,7 @@ const CHAIN_LABELS: Record<Chain, string> = {
 
 const CHAIN_SUBTITLES: Record<Chain, string> = {
     'asset-hub': 'Polkadot Asset Hub Archive RPC',
-    coretime: 'Polkadot Coretime RPC Archive RPC',
+    coretime: 'Polkadot Coretime Archive RPC',
 };
 
 export { selectedChain, GEO_ENDPOINTS, CHAIN_LABELS, CHAIN_SUBTITLES };
