@@ -2,9 +2,23 @@ import { AppEvent, eventBus } from '@/event/event';
 import { getDOMElementById } from './dom';
 import { WorldMap } from './world-map';
 import { ThemeManager } from './theme';
-import { MOON_SVG, SUN_SVG, COPY_SVG, CHECK_SVG, GITHUB_SVG, DOCS_SVG } from './icon';
+import {
+    MOON_SVG,
+    SUN_SVG,
+    COPY_SVG,
+    CHECK_SVG,
+    GITHUB_SVG,
+    DOCS_SVG,
+    ASSET_HUB_SVG,
+    CORETIME_SVG,
+} from './icon';
 import { selectedChain, GEO_ENDPOINTS, CHAIN_LABELS, CHAIN_SUBTITLES } from '@/data/chain-store';
 import type { Chain } from '@/data/node';
+
+const CHAIN_ICONS: Record<Chain, string> = {
+    'asset-hub': ASSET_HUB_SVG,
+    coretime: CORETIME_SVG,
+};
 
 class UI {
     private readonly appContainer: HTMLDivElement;
@@ -133,7 +147,14 @@ class UI {
             tabs.forEach((tab, c) => {
                 tab.classList.toggle('active', c === chain);
             });
-            titleSub.textContent = CHAIN_SUBTITLES[chain];
+            titleSub.innerHTML = '';
+            const iconEl = document.createElement('span');
+            iconEl.className = 'info-chain-icon';
+            iconEl.innerHTML = CHAIN_ICONS[chain];
+            const textEl = document.createElement('span');
+            textEl.textContent = CHAIN_SUBTITLES[chain];
+            titleSub.appendChild(iconEl);
+            titleSub.appendChild(textEl);
             const geoEndpoint = GEO_ENDPOINTS[chain];
             url.textContent = geoEndpoint;
             copyBtn.onclick = () => {

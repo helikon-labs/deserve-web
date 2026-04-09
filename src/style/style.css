@@ -293,6 +293,9 @@ svg {
 }
 
 .info-title-sub {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     font-size: 14px;
     font-weight: 500;
     color: var(--color-toggle-fg);
@@ -300,6 +303,18 @@ svg {
     letter-spacing: 0.03em;
     text-transform: uppercase;
     margin-bottom: 4px;
+}
+
+.info-chain-icon {
+    display: flex;
+    align-items: center;
+    flex-shrink: 0;
+}
+
+.info-chain-icon svg {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
 }
 
 .info-endpoint {
@@ -375,6 +390,11 @@ svg {
 
     .info-title-sub {
         font-size: 12px;
+    }
+
+    .info-chain-icon svg {
+        width: 15px;
+        height: 15px;
     }
 
     .info-url {
