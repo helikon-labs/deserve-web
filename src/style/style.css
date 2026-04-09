@@ -93,12 +93,6 @@ svg {
     display: none;
 }
 
-@media (max-width: 600px) {
-    .node-hit-area {
-        display: block;
-    }
-}
-
 .node-marker {
     fill: var(--color-node);
     stroke: var(--color-node-stroke);
@@ -215,6 +209,7 @@ svg {
 }
 
 .info-panel {
+    width: 400px;
     position: absolute;
     bottom: 24px;
     left: 24px;
@@ -262,6 +257,39 @@ svg {
 .info-github-link svg {
     width: 18px;
     height: 18px;
+}
+
+.chain-switcher {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 6px;
+}
+
+.chain-tab {
+    background: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 2px 8px;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-toggle-fg);
+    opacity: 0.45;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    transition:
+        opacity 0.15s,
+        border-color 0.15s;
+}
+
+.chain-tab:hover {
+    opacity: 0.75;
+}
+
+.chain-tab.active {
+    opacity: 1;
+    border-color: var(--color-tooltip-border);
 }
 
 .info-title-sub {
@@ -317,6 +345,10 @@ svg {
         height: 100dvh;
     }
 
+    .node-hit-area {
+        display: block;
+    }
+
     .theme-toggle {
         width: 28px;
         height: 28px;
@@ -330,6 +362,7 @@ svg {
     }
 
     .info-panel {
+        width: auto;
         border-width: 0.5px;
         bottom: 16px;
         left: 16px;
@@ -345,7 +378,7 @@ svg {
     }
 
     .info-url {
-        font-size: 12px;
+        font-size: 13px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;

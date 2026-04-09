@@ -1,12 +1,16 @@
-import { RPC_NODES } from '@/data/node';
-import { nodeStateAtoms } from '@/data/network-store';
+import { getNodes, type RPCNode, type Chain } from '@/data/node';
+import { nodeStateAtoms, resetAllNodes } from '@/data/network-store';
 import { NodeClient } from './node-client';
 
 class RPCManager {
-    private readonly clients: NodeClient[];
+    private clients: NodeClient[];
 
     constructor() {
-        this.clients = RPC_NODES.map((node) => {
+        this.clients = this.createClients(getNodes('asset-hub'));
+    }
+
+    private createClients(nodes: RPCNode[]): NodeClient[] {
+        return nodes.map((node) => {
             const stateAtom = nodeStateAtoms.get(node.id)!;
             return new NodeClient(node, (update) => {
                 stateAtom.set({ ...stateAtom.get(), ...update });
@@ -24,6 +28,13 @@ class RPCManager {
         for (const client of this.clients) {
             client.disconnect();
         }
+    }
+
+    restart(chain: Chain): void {
+        this.stop();
+        resetAllNodes();
+        this.clients = this.createClients(getNodes(chain));
+        this.start();
     }
 }
 

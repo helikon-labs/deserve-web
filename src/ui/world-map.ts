@@ -12,8 +12,9 @@ import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import type { FeatureCollection, Geometry, GeoJsonProperties, Polygon, Feature } from 'geojson';
 import { getDOMElementById } from './dom';
-import { RPC_NODES, type RPCNode } from '@/data/node';
+import { RPC_NODES, getNodes, type RPCNode } from '@/data/node';
 import { nodeStateAtoms, type NodeState } from '@/data/network-store';
+import { selectedChain } from '@/data/chain-store';
 
 type WorldTopology = Topology<{
     countries: GeometryCollection;
@@ -231,9 +232,11 @@ class WorldMap {
         `);
         const btn = this.tooltip.select<HTMLButtonElement>('.tooltip-copy-btn').node();
         if (btn) {
+            const wsURL =
+                getNodes(selectedChain.get()).find((n) => n.id === node.id)?.wsURL ?? node.wsURL;
             btn.addEventListener('click', () => {
                 void navigator.clipboard
-                    .writeText(node.wsURL)
+                    .writeText(wsURL)
                     .then(() => {
                         btn.textContent = 'copied!';
                         setTimeout(() => {

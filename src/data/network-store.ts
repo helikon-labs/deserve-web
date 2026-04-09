@@ -19,5 +19,11 @@ const nodeStateAtoms = new Map(
     RPC_NODES.map((node) => [node.id, atom<NodeState>(createInitialState())]),
 );
 
+const resetAllNodes = (): void => {
+    for (const nodeAtom of nodeStateAtoms.values()) {
+        nodeAtom.set(createInitialState());
+    }
+};
+
 export type { NodeState };
-export { nodeStateAtoms };
+export { nodeStateAtoms, resetAllNodes };
