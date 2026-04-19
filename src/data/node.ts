@@ -31,7 +31,8 @@ const NODE_LOCATIONS: NodeLocation[] = [
     { id: 10, city: 'Seattle', latitude: 47.606, longitude: -122.332, slug: 'seattle' },
     { id: 11, city: 'Singapore', latitude: 1.352, longitude: 103.82, slug: 'singapore' },
     { id: 12, city: 'Sydney', latitude: -33.869, longitude: 151.209, slug: 'sydney' },
-    { id: 13, city: 'Warsaw', latitude: 52.23, longitude: 21.012, slug: 'warsaw' },
+    { id: 13, city: 'Tokyo', latitude: 35.6895, longitude: 139.6923, slug: 'tokyo' },
+    { id: 14, city: 'Warsaw', latitude: 52.23, longitude: 21.012, slug: 'warsaw' },
 ];
 
 const CHAIN_SLUGS: Record<Chain, string> = {
