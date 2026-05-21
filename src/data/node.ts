@@ -17,7 +17,7 @@ interface RPCNode {
     wsURL: string;
 }
 
-const NODE_LOCATIONS: NodeLocation[] = [
+const ASSET_HUB_LOCATIONS: NodeLocation[] = [
     { id: 0, city: 'Atlanta', latitude: 33.749, longitude: -84.388, slug: 'atlanta' },
     { id: 1, city: 'Gravelines', latitude: 50.988, longitude: 2.128, slug: 'gravelines' },
     { id: 2, city: 'İstanbul', latitude: 41.0082, longitude: 28.9784, slug: 'istanbul' },
@@ -33,6 +33,15 @@ const NODE_LOCATIONS: NodeLocation[] = [
     { id: 14, city: 'Warsaw', latitude: 52.23, longitude: 21.012, slug: 'warsaw' },
 ];
 
+const CORETIME_LOCATIONS: NodeLocation[] = [
+    { id: 2, city: 'İstanbul', latitude: 41.0082, longitude: 28.9784, slug: 'istanbul' },
+];
+
+const NODE_LOCATIONS: Record<Chain, NodeLocation[]> = {
+    'asset-hub': ASSET_HUB_LOCATIONS,
+    coretime: CORETIME_LOCATIONS,
+};
+
 const CHAIN_SLUGS: Record<Chain, string> = {
     'asset-hub': 'asset-hub.polkadot',
     coretime: 'coretime.polkadot',
@@ -40,7 +49,7 @@ const CHAIN_SLUGS: Record<Chain, string> = {
 
 function getNodes(chain: Chain): RPCNode[] {
     const chainSlug = CHAIN_SLUGS[chain];
-    return NODE_LOCATIONS.map((loc) => ({
+    return NODE_LOCATIONS[chain].map((loc) => ({
         id: loc.id,
         city: loc.city,
         latitude: loc.latitude,

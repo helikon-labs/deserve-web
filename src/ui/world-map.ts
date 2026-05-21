@@ -12,7 +12,7 @@ import { feature } from 'topojson-client';
 import type { Topology, GeometryCollection } from 'topojson-specification';
 import type { FeatureCollection, Geometry, GeoJsonProperties, Polygon, Feature } from 'geojson';
 import { getDOMElementById } from './dom';
-import { RPC_NODES, getNodes, type RPCNode } from '@/data/node';
+import { getNodes, NODE_LOCATIONS, type RPCNode } from '@/data/node';
 import { nodeStateAtoms, type NodeState } from '@/data/network-store';
 import { selectedChain } from '@/data/chain-store';
 import { ASSET_HUB_SVG, CORETIME_SVG } from './icon';
@@ -151,11 +151,15 @@ class WorldMap {
             .join('path')
             .attr('d', path)
             .attr('class', 'country');
-        // nodes
+        this.renderNodes();
+    }
+
+    private renderNodes(): void {
+        if (!this.svg || !this.projection) return;
         this.svg
             .select<SVGGElement>('g.nodes')
             .selectAll<SVGGElement, RPCNode>('g.node')
-            .data(RPC_NODES, (d) => d.id)
+            .data(getNodes(selectedChain.get()), (d) => d.id)
             .join((enter) => {
                 const g = enter
                     .append('g')
@@ -275,7 +279,9 @@ class WorldMap {
     }
 
     private setupPingSubscriptions(): void {
-        for (const node of RPC_NODES) {
+        const allNodes = Object.values(NODE_LOCATIONS).flat();
+        const uniqueNodes = [...new Map(allNodes.map((n) => [n.id, n])).values()];
+        for (const node of uniqueNodes) {
             const stateAtom = nodeStateAtoms.get(node.id);
             if (!stateAtom) continue;
             this.lastBestBlocks.set(node.id, null);
@@ -296,6 +302,7 @@ class WorldMap {
                     return;
                 }
                 this.clearPingAnimations();
+                this.renderNodes();
             }),
         );
     }
