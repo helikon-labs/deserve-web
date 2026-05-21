@@ -27,11 +27,9 @@ const NODE_LOCATIONS: NodeLocation[] = [
     { id: 6, city: 'Miami', latitude: 25.762, longitude: -80.192, slug: 'miami' },
     { id: 7, city: 'Montréal', latitude: 45.502, longitude: -73.567, slug: 'montreal' },
     { id: 8, city: 'Mumbai', latitude: 19.076, longitude: 72.878, slug: 'mumbai' },
-    { id: 9, city: 'São Paulo', latitude: -23.551, longitude: -46.633, slug: 'sao-paulo' },
     { id: 10, city: 'Seattle', latitude: 47.606, longitude: -122.332, slug: 'seattle' },
     { id: 11, city: 'Singapore', latitude: 1.352, longitude: 103.82, slug: 'singapore' },
     { id: 12, city: 'Sydney', latitude: -33.869, longitude: 151.209, slug: 'sydney' },
-    { id: 13, city: 'Tokyo', latitude: 35.6895, longitude: 139.6923, slug: 'tokyo' },
     { id: 14, city: 'Warsaw', latitude: 52.23, longitude: 21.012, slug: 'warsaw' },
 ];
 
