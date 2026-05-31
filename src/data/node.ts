@@ -23,13 +23,12 @@ const ASSET_HUB_LOCATIONS: NodeLocation[] = [
     { id: 2, city: 'İstanbul', latitude: 41.0082, longitude: 28.9784, slug: 'istanbul' },
     { id: 3, city: 'Limburg', latitude: 50.384, longitude: 8.05, slug: 'limburg' },
     { id: 4, city: 'London', latitude: 51.507, longitude: -0.128, slug: 'london' },
-    { id: 5, city: 'Miami', latitude: 25.762, longitude: -80.192, slug: 'miami' },
-    { id: 6, city: 'Montréal', latitude: 45.502, longitude: -73.567, slug: 'montreal' },
-    { id: 7, city: 'Mumbai', latitude: 19.076, longitude: 72.878, slug: 'mumbai' },
-    { id: 8, city: 'Seattle', latitude: 47.606, longitude: -122.332, slug: 'seattle' },
-    { id: 9, city: 'Singapore', latitude: 1.352, longitude: 103.82, slug: 'singapore' },
-    { id: 10, city: 'Sydney', latitude: -33.869, longitude: 151.209, slug: 'sydney' },
-    { id: 11, city: 'Warsaw', latitude: 52.23, longitude: 21.012, slug: 'warsaw' },
+    { id: 5, city: 'Montréal', latitude: 45.502, longitude: -73.567, slug: 'montreal' },
+    { id: 6, city: 'Mumbai', latitude: 19.076, longitude: 72.878, slug: 'mumbai' },
+    { id: 7, city: 'Seattle', latitude: 47.606, longitude: -122.332, slug: 'seattle' },
+    { id: 8, city: 'Singapore', latitude: 1.352, longitude: 103.82, slug: 'singapore' },
+    { id: 9, city: 'Sydney', latitude: -33.869, longitude: 151.209, slug: 'sydney' },
+    { id: 10, city: 'Warsaw', latitude: 52.23, longitude: 21.012, slug: 'warsaw' },
 ];
 
 const CORETIME_LOCATIONS: NodeLocation[] = [
