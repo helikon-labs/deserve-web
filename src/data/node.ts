@@ -18,14 +18,11 @@ interface RPCNode {
 }
 
 const ASSET_HUB_LOCATIONS: NodeLocation[] = [
-    { id: 0, city: 'İstanbul', latitude: 41.0082, longitude: 28.9784, slug: 'istanbul' },
-    { id: 1, city: 'Limburg', latitude: 50.384, longitude: 8.05, slug: 'limburg' },
-    { id: 2, city: 'Montréal', latitude: 45.502, longitude: -73.567, slug: 'montreal' },
-    { id: 3, city: 'Singapore', latitude: 1.352, longitude: 103.82, slug: 'singapore' },
+    { id: 0, city: 'Warsaw', latitude: 52.237, longitude: 21.0175, slug: 'warsaw' },
 ];
 
 const CORETIME_LOCATIONS: NodeLocation[] = [
-    { id: 0, city: 'İstanbul', latitude: 41.0082, longitude: 28.9784, slug: 'istanbul' },
+    // { id: 0, city: 'Warsaw', latitude: 41.0082, longitude: 28.9784, slug: 'istanbul' },
 ];
 
 const NODE_LOCATIONS: Record<Chain, NodeLocation[]> = {

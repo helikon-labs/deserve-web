@@ -108,7 +108,7 @@ class UI {
 
         const chainSwitcher = document.createElement('div');
         chainSwitcher.className = 'chain-switcher';
-        const chains: Chain[] = ['asset-hub', 'coretime'];
+        const chains: Chain[] = ['asset-hub']; //, 'coretime'];
         const tabs = new Map<Chain, HTMLButtonElement>();
         for (const chain of chains) {
             const tab = document.createElement('button');
